@@ -11,6 +11,7 @@ import (
 	"github.com/analogj/scrutiny/webapp/backend/pkg/models/measurements"
 	metricsModels "github.com/analogj/scrutiny/webapp/backend/pkg/models/metrics"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/sirupsen/logrus"
 )
 
@@ -29,6 +30,11 @@ func NewCollector(logger *logrus.Entry) *Collector {
 		registry: prometheus.NewRegistry(),
 		logger:   logger,
 	}
+
+	// Register Go runtime metrics (memory, GC, goroutines, etc.)
+	mc.registry.MustRegister(collectors.NewGoCollector())
+
+	// Register custom device metrics collector
 	mc.registry.MustRegister(mc)
 	return mc
 }
